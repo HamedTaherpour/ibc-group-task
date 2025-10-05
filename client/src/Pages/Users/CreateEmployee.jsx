@@ -38,6 +38,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
 
   //////////////////////////////////////// STATES /////////////////////////////////////
   const [employeeData, setEmployeeData] = useState(initialEmployeeState);
+  const [errors, setErrors] = useState({});
 
   //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
 
@@ -45,19 +46,37 @@ const CreateUser = ({ open, setOpen, scroll }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { firstName, lastName, username, password, phone, email } = employeeData
-    if (!firstName || !lastName || !username || !password || !phone  )
-      return alert("Make sure to provide all the fields")
+    
+    // Validate fields
+    const newErrors = {};
+    if (!firstName) newErrors.firstName = "First name is required";
+    if (!lastName) newErrors.lastName = "Last name is required";
+    if (!username) newErrors.username = "Username is required";
+    if (!password) newErrors.password = "Password is required";
+    if (!phone) newErrors.phone = "Phone number is required";
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
     dispatch(createEmployee(employeeData, setOpen));
     setEmployeeData(initialEmployeeState)
   };
 
   const handleChange = (field, value) => {
     setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value, }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
-    setEmployeeData(initialEmployeeState)
+    setEmployeeData(initialEmployeeState);
+    setErrors({});
   };
 
   return (
@@ -88,34 +107,52 @@ const CreateUser = ({ open, setOpen, scroll }) => {
               <tr>
                 <td className="pb-4 text-lg">First Name </td>
                 <td className="pb-4">
-                  <TextField
-                    size="small"
-                    fullWidth
-                    value={employeeData.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
-                  />
+                  <div className="flex flex-col w-full">
+                    <TextField
+                      size="small"
+                      fullWidth
+                      value={employeeData.firstName}
+                      onChange={(e) => handleChange('firstName', e.target.value)}
+                      error={!!errors.firstName}
+                    />
+                    {errors.firstName && (
+                      <span className="text-red-500 text-sm mt-1">{errors.firstName}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td className="pb-4 text-lg">Last Name </td>
                 <td className="pb-4">
-                  <TextField
-                    size="small"
-                    fullWidth
-                    value={employeeData.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
-                  />
+                  <div className="flex flex-col w-full">
+                    <TextField
+                      size="small"
+                      fullWidth
+                      value={employeeData.lastName}
+                      onChange={(e) => handleChange('lastName', e.target.value)}
+                      error={!!errors.lastName}
+                    />
+                    {errors.lastName && (
+                      <span className="text-red-500 text-sm mt-1">{errors.lastName}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td className="pb-4 text-lg">User Name </td>
                 <td className="pb-4">
-                  <TextField
-                    size="small"
-                    fullWidth
-                    value={employeeData.username}
-                    onChange={(e) => handleChange('username', e.target.value)}
-                  />
+                  <div className="flex flex-col w-full">
+                    <TextField
+                      size="small"
+                      fullWidth
+                      value={employeeData.username}
+                      onChange={(e) => handleChange('username', e.target.value)}
+                      error={!!errors.username}
+                    />
+                    {errors.username && (
+                      <span className="text-red-500 text-sm mt-1">{errors.username}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -133,25 +170,37 @@ const CreateUser = ({ open, setOpen, scroll }) => {
               <tr>
                 <td className="flex items-start pt-2 text-lg">Password </td>
                 <td className="pb-4">
-                  <TextField
-                    type="password"
-                    value={employeeData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
+                  <div className="flex flex-col w-full">
+                    <TextField
+                      type="password"
+                      value={employeeData.password}
+                      onChange={(e) => handleChange("password", e.target.value)}
+                      size="small"
+                      fullWidth
+                      error={!!errors.password}
+                    />
+                    {errors.password && (
+                      <span className="text-red-500 text-sm mt-1">{errors.password}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td className="flex items-start pt-2 text-lg">Phone </td>
                 <td className="pb-4">
-                  <TextField
-                    type="number"
-                    size="small"
-                    value={employeeData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                    fullWidth
-                  />
+                  <div className="flex flex-col w-full">
+                    <TextField
+                      type="number"
+                      size="small"
+                      value={employeeData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      fullWidth
+                      error={!!errors.phone}
+                    />
+                    {errors.phone && (
+                      <span className="text-red-500 text-sm mt-1">{errors.phone}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             </table>
